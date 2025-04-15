@@ -31,7 +31,7 @@ export default function Home() {
       </main>
 
       <footer className={styles.footer}>
-        <p>Desenvolvido durante o curso de Desenvolvimento de Sistemas</p>
+        <p>Desenvolvimento de Sistemas - Samuel Braga</p>
       </footer>
     </div>
   );
