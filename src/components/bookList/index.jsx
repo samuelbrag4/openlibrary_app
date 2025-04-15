@@ -2,11 +2,10 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-
 import styles from "./bookList.module.css";
 
-const BookList = () => {
-  const url = "https://openlibrary.org/api/books"; // Link da API externa
+const BookList = ({ searchQuery, category }) => {
+  const url = "https://openlibrary.org/api/books";
   const isbnList = ["0451526538", "9780140449136", "9780140449266"]; // Exemplos de ISBNs
 
   const [books, setBooks] = useState([]);
@@ -28,15 +27,27 @@ const BookList = () => {
         setLoading(false);
       } catch (error) {
         console.log("Erro ao buscar livros na API");
-        setError(
-          "Não foi possível carregar os livros. Tente novamente mais tarde! #Sorry"
-        );
+        setError("Não foi possível carregar os livros. Tente novamente mais tarde!");
         setLoading(false);
       }
     };
 
     fetchBooks();
   }, []);
+
+  const filteredBooks = books.filter((book) => {
+    const matchesSearch =
+      searchQuery === "" ||
+      book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      book.authors?.some((author) =>
+        author.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+    const matchesCategory =
+      category === "" || book.subjects?.some((subject) => subject === category);
+
+    return matchesSearch && matchesCategory;
+  });
 
   if (loading) {
     return <div className={styles.loading}>Carregando livros...</div>;
@@ -48,9 +59,8 @@ const BookList = () => {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Livros Disponíveis</h1>
       <div className={styles.bookGrid}>
-        {books.map((book, index) => (
+        {filteredBooks.map((book, index) => (
           <div key={index} className={styles.bookCard}>
             <div className={styles.imageContainer}>
               <img
